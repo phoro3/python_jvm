@@ -9,5 +9,11 @@ def is_class_file(magic):
 if __name__ == "__main__":
     filename = sys.argv[1]
     parser = Parser()
-    print(parser.main(filename).__dict__)
+    parse_result = parser.main(filename).__dict__
+
+    for k, v in parse_result.items():
+        print(k)
+        print(v)
+        print()
+    
     
