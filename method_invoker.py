@@ -1,4 +1,4 @@
-from util import convert_bytes_to_string
+from util import convert_bytes_to_string, convert_bytes_to_int
 import importlib
 
 class MethodInvoker:
@@ -40,8 +40,8 @@ class MethodInvoker:
             self.instruction_set[op_code]()
 
     def _getstatic(self):
-        index_byte1 = int.from_bytes(self.read_codes(), 'big')
-        index_byte2 = int.from_bytes(self.read_codes(), 'big')
+        index_byte1 = convert_bytes_to_int(self.read_codes())
+        index_byte2 = convert_bytes_to_int(self.read_codes())
         index = index_byte1 << 8 | index_byte2
 
         field_ref = self.constant_pool[index]
@@ -56,7 +56,7 @@ class MethodInvoker:
         self.stack.append(target_field)
 
     def _ldc(self):
-        index = int.from_bytes(self.read_codes(), 'big')
+        index = convert_bytes_to_int(self.read_codes())
         # TODO: implement other than string
         string = convert_bytes_to_string(
             self.constant_pool[self.constant_pool[index]['string_index']]['bytes']
@@ -64,8 +64,8 @@ class MethodInvoker:
         self.stack.append(string)
 
     def _invokevirtual(self):
-        index_byte1 = int.from_bytes(self.read_codes(), 'big')
-        index_byte2 = int.from_bytes(self.read_codes(), 'big')
+        index_byte1 = convert_bytes_to_int(self.read_codes())
+        index_byte2 = convert_bytes_to_int(self.read_codes())
         index = index_byte1 << 8 | index_byte2
 
         # get method name from constant_pool
