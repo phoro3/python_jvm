@@ -17,19 +17,20 @@ def find_main_codes(class_file):
             return method
     raise Exception
 
+def main(filename):
+    # parse java class file
+    parser = Parser()
+    class_file = parser.main(filename)
+
+    # find main method
+    main_method_info = find_main_codes(class_file)
+
+    # invoke main method
+    constant_pool = class_file.constant_pool
+    method_invoker = MethodInvoker(constant_pool, main_method_info)
+    method_invoker.invoke()
 
 
 if __name__ == "__main__":
     filename = sys.argv[1]
-    parser = Parser()
-    class_file = parser.main(filename)
-
-    for k, v in class_file.__dict__.items():
-        print(k)
-        print(v)
-        print()
-
-    constant_pool = class_file.constant_pool
-    main_method_info = find_main_codes(class_file)
-    method_invoker = MethodInvoker(constant_pool, main_method_info)
-    method_invoker.invoke()
+    main(filename)
