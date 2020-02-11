@@ -27,33 +27,33 @@ class Parser():
     def main(self, filename):
         self.class_file = ClassFile()
         with open(filename, "rb") as f:
-            self.class_file.set_magic(f.read(4))
-            self.class_file.set_minor_version(int.from_bytes(f.read(2), 'big'))
-            self.class_file.set_major_version(int.from_bytes(f.read(2), 'big'))
-            self.class_file.set_constant_pool_count(int.from_bytes(f.read(2), 'big'))
+            self.class_file.magic = f.read(4)
+            self.class_file.minor_version = int.from_bytes(f.read(2), 'big')
+            self.class_file.major_versio = int.from_bytes(f.read(2), 'big')
+            self.class_file.constant_pool_count = int.from_bytes(f.read(2), 'big')
             for _ in range(self.class_file.constant_pool_count - 1):
                 self.class_file.add_constant_pool(self.parse_constant_pool(f))
-            self.class_file.set_access_flags(int.from_bytes(f.read(2), 'big'))
-            self.class_file.set_this_class(int.from_bytes(f.read(2), 'big'))
-            self.class_file.set_super_class(int.from_bytes(f.read(2), 'big'))
-            self.class_file.set_interfaces_count(int.from_bytes(f.read(2), 'big'))
+            self.class_file.access_flags = int.from_bytes(f.read(2), 'big')
+            self.class_file.this_class = int.from_bytes(f.read(2), 'big')
+            self.class_file.super_class = int.from_bytes(f.read(2), 'big')
+            self.class_file.interfaces_count = int.from_bytes(f.read(2), 'big')
             for _ in range(self.class_file.interfaces_count):
                 self.class_file.add_interfaces(int.from_bytes(f.read(2), 'big'))
-            self.class_file.set_fields_count(int.from_bytes(f.read(2), 'big'))
+            self.class_file.fields_count = int.from_bytes(f.read(2), 'big')
             for _ in range(self.class_file.fields_count):
                 self.class_file.add_field(self.parse_field())
-            self.class_file.set_methods_count(int.from_bytes(f.read(2), 'big'))
+            self.class_file.methods_count = int.from_bytes(f.read(2), 'big')
             for _ in range(self.class_file.methods_count):
                 self.class_file.add_method(self.parse_methods(f))
-            self.class_file.set_attirbutes_count(int.from_bytes(f.read(2), 'big'))
+            self.class_file.attributes_count = int.from_bytes(f.read(2), 'big')
             for _ in range(self.class_file.attributes_count):
                 self.class_file.add_attribute(self.parse_attributes(f))
         return self.class_file
- 
+
     def parse_constant_pool(self, file_object):
         tag = int.from_bytes(file_object.read(1), 'big')
         return self.constant_parser[tag](file_object)
-    
+
     def parse_utf8(self, file_object):
         length = int.from_bytes(file_object.read(2), 'big')
         bytes_list = [file_object.read(1) for _ in range(length)]
@@ -74,7 +74,7 @@ class Parser():
             'tag': self.constant_pool_tags['CONSTANT_String'],
             'string_index': int.from_bytes(file_object.read(2), 'big')
         }
-           
+
     def parse_field_ref(self, file_object):
         return {
             'tag': self.constant_pool_tags['CONSTANT_Fieldref'],
@@ -88,7 +88,7 @@ class Parser():
             'class_index': int.from_bytes(file_object.read(2), 'big'),
             'name_and_type_index': int.from_bytes(file_object.read(2), 'big')
         }
-    
+
     def parse_name_and_type(self, file_object):
         return {
             'tag': self.constant_pool_tags['CONSTANT_NameAndType'],
