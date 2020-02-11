@@ -49,8 +49,11 @@ class MethodInvoker:
 
     def _ldc(self):
         index = int.from_bytes(self.read_codes(), 'big')
-        print('ldc')
-
+        # TODO: implement other than string
+        string = convert_bytes_to_string(
+            self.constant_pool[self.constant_pool[index]['string_index']]['bytes']
+        )
+        self.stack.append(string)
 
     def _invokevirtual(self):
         index_byte1 = int.from_bytes(self.read_codes(), 'big')
