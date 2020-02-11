@@ -79,7 +79,7 @@ class Parser():
         return {
             'tag': self.constant_pool_tags['CONSTANT_Fieldref'],
             'class_index': int.from_bytes(file_object.read(2), 'big'),
-            'name_ant_type_index': int.from_bytes(file_object.read(2), 'big')
+            'name_and_type_index': int.from_bytes(file_object.read(2), 'big')
         }
 
     def parse_method_ref(self, file_object):
