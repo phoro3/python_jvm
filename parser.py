@@ -16,7 +16,7 @@ class Parser():
             self.constant_pool_tags['CONSTANT_String']: lambda f: self.parse_string(f),
             self.constant_pool_tags['CONSTANT_Fieldref']: lambda f: self.parse_field_ref(f),
             self.constant_pool_tags['CONSTANT_Methodref']: lambda f: self.parse_method_ref(f),
-            self.constant_pool_tags['CONSTANT_NameAndType']: lambda f: self.parse_name_and_type(f) 
+            self.constant_pool_tags['CONSTANT_NameAndType']: lambda f: self.parse_name_and_type(f)
         }
         self.attribute_parser = {
             'Code': lambda f: self.parse_code(f),
@@ -24,7 +24,7 @@ class Parser():
             'SourceFile': lambda f: self.parse_source_file(f)
         }
 
-    def main(self, filename):
+    def parse(self, filename):
         self.class_file = ClassFile()
         with open(filename, "rb") as f:
             self.class_file.magic = f.read(4)
@@ -108,7 +108,7 @@ class Parser():
             'attributes_count': int.from_bytes(file_object.read(2), 'big'),
             'attributes': self.parse_attributes(file_object)
         }
-    
+
     def parse_attributes(self, file_object):
         attribute_name_index = int.from_bytes(file_object.read(2), 'big')
         attribute_length = int.from_bytes(file_object.read(4), 'big')
@@ -116,7 +116,7 @@ class Parser():
         attribute_name = ''.join(map(lambda x: x.decode('UTF-8'), attribute_name))
         attributes = {
             'attribute_name_index': attribute_name_index,
-            'attribute_length': attribute_length, 
+            'attribute_length': attribute_length,
         }
         attributes.update(self.attribute_parser[attribute_name](file_object))
         return attributes
@@ -130,7 +130,7 @@ class Parser():
         exception_table = [file_object.read(1) for _ in range(exception_table_length)]
         attributes_count = int.from_bytes(file_object.read(2), 'big')
         attributes = [self.parse_attributes(file_object) for _ in range(attributes_count)]
-        
+
         return {
             'max_stack': max_stack,
             'max_locals': max_locals,
@@ -141,7 +141,7 @@ class Parser():
             'attributes_count': attributes_count,
             'attributes': attributes
         }
-    
+
     def parse_exception_table(self, file_object):
         return {
             'start_pc': int.from_bytes(file_object.read(2), 'big'),
@@ -163,7 +163,7 @@ class Parser():
             'line_number_table_length': line_number_table_length,
             'line_number_table': line_number_table
         }
-    
+
     def parse_source_file(self, file_object):
         return {
             'sourcefile_index': int.from_bytes(file_object.read(2), 'big')

@@ -20,7 +20,7 @@ def find_main_codes(class_file):
 def main(filename):
     # parse java class file
     parser = Parser()
-    class_file = parser.main(filename)
+    class_file = parser.parse(filename)
 
     # find main method
     main_method_info = find_main_codes(class_file)
