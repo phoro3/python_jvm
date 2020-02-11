@@ -1,14 +1,12 @@
 import sys
 from parser import Parser
 from method_invoker import MethodInvoker
+from util import convert_bytes_to_string
 
 CAFABABE = b'\xca\xfe\xba\xbe'
 
 def is_class_file(magic):
     return magic == CAFABABE
-
-def convert_bytes_to_string(bytes_list):
-    return ''.join(map(lambda x: x.decode('UTF-8'), bytes_list))
 
 def find_main_codes(class_file):
     for method in class_file.methods:
@@ -30,10 +28,8 @@ if __name__ == "__main__":
         print(k)
         print(v)
         print()
-    
+
     constant_pool = class_file.constant_pool
     main_method_info = find_main_codes(class_file)
     method_invoker = MethodInvoker(constant_pool, main_method_info)
     method_invoker.invoke()
-
-    

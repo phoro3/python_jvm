@@ -1,3 +1,5 @@
+from util import convert_bytes_to_string
+
 class MethodInvoker:
     def __init__(self, constant_pool, method_info):
         self.instruction_set = {
@@ -15,7 +17,17 @@ class MethodInvoker:
     def read_codes(self):
         data = self.codes[self.program_counter]
         self.program_counter += 1
-        return data  
+        return data
+
+    def get_name_and_type(self, name_and_type_index):
+        name_and_type_info = self.constant_pool[name_and_type_index]
+        name_index = name_and_type_info['name_index']
+        descriptor_index = name_and_type_info['descriptor_index']
+        return {
+            'name': convert_bytes_to_string(self.constant_pool[name_index]['bytes']),
+            'type': convert_bytes_to_string(self.constant_pool[descriptor_index]['bytes'])
+        }
+
 
     def invoke(self):
         while self.program_counter < self.code_length:
@@ -26,20 +38,26 @@ class MethodInvoker:
         index_byte1 = int.from_bytes(self.read_codes(), 'big')
         index_byte2 = int.from_bytes(self.read_codes(), 'big')
         index = index_byte1 << 8 | index_byte2
-        print('getstatic')      
+        field_ref = self.constant_pool[index]
+        class_index =field_ref['class_index']
+        class_name = convert_bytes_to_string(
+            self.constant_pool[self.constant_pool[class_index]['name_index']]['bytes']
+            )
+        name_and_type_index = field_ref['name_and_type_index']
+        name_and_type = self.get_name_and_type(name_and_type_index)
+        self.stack.append((class_name + '.' + name_and_type['name'], name_and_type['type']))
 
     def _ldc(self):
         index = int.from_bytes(self.read_codes(), 'big')
-        print('ldc')      
+        print('ldc')
 
 
     def _invokevirtual(self):
         index_byte1 = int.from_bytes(self.read_codes(), 'big')
         index_byte2 = int.from_bytes(self.read_codes(), 'big')
-        print('invokevirtual')      
+        print('invokevirtual')
 
     def _return(self):
         print('return')
 
 
-  
